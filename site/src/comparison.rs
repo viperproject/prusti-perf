@@ -10,7 +10,7 @@ use crate::selector::{self, Tag};
 
 use collector::category::Category;
 use collector::Bound;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
@@ -48,20 +48,25 @@ pub async fn handle_triage(
     let metric = Metric::Instructions;
     let benchmark_map = ctxt.get_benchmark_category_map().await;
     loop {
-        let comparison =
-            match compare_given_commits(before, next.clone(), metric, ctxt, &master_commits)
-                .await
-                .map_err(|e| format!("error comparing commits: {}", e))?
-            {
-                Some(c) => c,
-                None => {
-                    log::info!(
-                        "No data found for end bound {:?}. Ending comparison...",
-                        next
-                    );
-                    break;
-                }
-            };
+        let comparison = match compare_given_commits(
+            before,
+            next.clone(),
+            metric.clone(),
+            ctxt,
+            &master_commits,
+        )
+        .await
+        .map_err(|e| format!("error comparing commits: {}", e))?
+        {
+            Some(c) => c,
+            None => {
+                log::info!(
+                    "No data found for end bound {:?}. Ending comparison...",
+                    next
+                );
+                break;
+            }
+        };
         num_comparisons += 1;
         log::info!(
             "Comparing {} to {}",
@@ -180,34 +185,39 @@ async fn populate_report(
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub enum Metric {
     #[serde(rename = "instructions:u")]
     Instructions,
     #[serde(rename = "cycles:u")]
     Cycles,
-    #[serde(rename = "faults")]
-    Faults,
     #[serde(rename = "max-rss")]
     MaxRSS,
-    #[serde(rename = "task-clock")]
-    TaskClock,
-    #[serde(rename = "wall-time")]
-    WallTime,
-    #[serde(rename = "cpu-clock")]
-    CpuClock,
+    Custom(String),
+}
+
+impl<'de> Deserialize<'de> for Metric {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let metric = String::deserialize(deserializer)?;
+        Ok(match metric.as_str() {
+            "instructions:u" => Metric::Instructions,
+            "cycles:u" => Metric::Cycles,
+            "max-rss" => Metric::MaxRSS,
+            _ => Metric::Custom(metric),
+        })
+    }
 }
 
 impl Metric {
-    pub fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &str {
         match self {
             Self::Instructions => "instructions:u",
             Self::Cycles => "cycles:u",
-            Self::Faults => "faults",
             Self::MaxRSS => "max-rss",
-            Self::TaskClock => "task-clock",
-            Self::WallTime => "wall-time",
-            Self::CpuClock => "cpu-clock",
+            Self::Custom(str) => str.as_str(),
         }
     }
 
@@ -662,7 +672,7 @@ async fn compare_given_commits(
     let statistics_for_b = statistics_from_series(&mut responses);
 
     let mut historical_data =
-        HistoricalDataMap::calculate(ctxt, a.clone(), master_commits, metric).await?;
+        HistoricalDataMap::calculate(ctxt, a.clone(), master_commits, metric.clone()).await?;
     let comparisons = statistics_for_a
         .into_iter()
         .filter_map(|(test_case, a)| {
@@ -672,7 +682,7 @@ async fn compare_given_commits(
                     benchmark: test_case.0,
                     profile: test_case.1,
                     scenario: test_case.2,
-                    metric,
+                    metric: metric.clone(),
                     historical_data: historical_data.data.remove(&test_case),
                     results: (a, b),
                 })
@@ -1482,6 +1492,33 @@ mod tests {
 "#
             .trim_start(),
         );
+    }
+
+    #[test]
+    fn parse_metric_instructions() {
+        let metric: Metric = serde_json::from_str(r#""instructions:u""#).unwrap();
+        assert!(matches!(metric, Metric::Instructions));
+    }
+
+    #[test]
+    fn parse_metric_cycles() {
+        let metric: Metric = serde_json::from_str(r#""cycles:u""#).unwrap();
+        assert!(matches!(metric, Metric::Cycles));
+    }
+
+    #[test]
+    fn parse_metric_max_rss() {
+        let metric: Metric = serde_json::from_str(r#""max-rss""#).unwrap();
+        assert!(matches!(metric, Metric::MaxRSS));
+    }
+
+    #[test]
+    fn parse_metric_custom() {
+        let metric: Metric = serde_json::from_str(r#""foo""#).unwrap();
+        match metric {
+            Metric::Custom(str) => assert_eq!(str, "foo"),
+            _ => panic!(),
+        }
     }
 
     // (category, before, after)
