@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{DateTime, NaiveDate, Utc};
 pub use database::{Commit, PatchName, QueryLabel};
 use serde::Deserialize;
 use std::cmp::PartialOrd;
@@ -255,18 +255,40 @@ pub struct MasterCommit {
     pub time: chrono::DateTime<chrono::Utc>,
 }
 
-/// This provides the master-branch Rust commits which should have accompanying
-/// bors artifacts available.
-///
-/// The first commit returned (at index 0) is the most recent, the last is the
-/// oldest.
-///
-/// Specifically, this is the last 168 days of bors commits.
-///
-/// Note that this does not contain try commits today, so it should not be used
-/// to validate hashes or expand them generally speaking. This may also change
-/// in the future.
 pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
-    let response = reqwest::get("https://triage.rust-lang.org/bors-commit-list").await?;
-    Ok(response.json().await?)
+    let git_log = Command::new("git")
+        .stdout(Stdio::piped())
+        .current_dir("../prusti-dev")
+        .arg("--no-pager")
+        .arg("log")
+        .arg("--author=bors")
+        .arg("--pretty=format:%H,%aI")
+        .output()
+        .unwrap();
+
+    let git_output = std::str::from_utf8(&git_log.stdout).unwrap();
+    let mut output_lines = git_output.lines();
+
+    let mut result: Vec<MasterCommit> = Vec::new();
+
+    if output_lines.next().is_none() {
+        return Ok(result);
+    }
+
+    let mut cur_line = output_lines.next().unwrap();
+
+    while let Some(parent) = output_lines.next() {
+        let mut cur_chunks = cur_line.split(",");
+        let sha = cur_chunks.next().unwrap();
+        let time = cur_chunks.next().unwrap();
+        let parent_sha = parent.split(":").next().unwrap();
+        result.push(MasterCommit {
+            sha: sha.to_string(),
+            parent_sha: parent_sha.to_string(),
+            pr: None,
+            time: DateTime::parse_from_rfc3339(time).unwrap().with_timezone(&Utc)
+        });
+        cur_line = parent;
+    }
+    Ok(result)
 }
