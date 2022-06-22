@@ -1,0 +1,6 @@
+[package]
+name = "fibonacci"
+version = "0.0.1"
+authors = [ "Zack Grannan <zgrannan@protonmail.com>" ]
+
+[workspace]
