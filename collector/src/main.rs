@@ -967,10 +967,17 @@ fn main_result() -> anyhow::Result<i32> {
             )?;
             benchmarks.retain(|b| b.category().is_primary_or_secondary());
 
+            let artifact_id = if id.starts_with("commit:") {
+                let commit = get_commit_or_fake_it(id.split(":").nth(1).unwrap())?;
+                ArtifactId::Commit(commit)
+            } else {
+                ArtifactId::Tag(id)
+            };
+
             let res = bench(
                 &mut rt,
                 pool,
-                &ArtifactId::Tag(id),
+                &artifact_id,
                 &profiles,
                 &scenarios,
                 bench_rustc.bench_rustc,

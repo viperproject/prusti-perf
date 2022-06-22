@@ -271,10 +271,6 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
 
     let mut result: Vec<MasterCommit> = Vec::new();
 
-    if output_lines.next().is_none() {
-        return Ok(result);
-    }
-
     let mut cur_line = output_lines.next().unwrap();
 
     while let Some(parent) = output_lines.next() {
@@ -290,5 +286,6 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
         });
         cur_line = parent;
     }
+    log::info!("{} commits to master", result.len());
     Ok(result)
 }
