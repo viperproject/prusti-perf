@@ -1,5 +1,5 @@
 [package]
-name = "fibonacci"
+name = "heapsort"
 version = "0.0.1"
 authors = [ "Prusti Developers" ]
 

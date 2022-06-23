@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Iterates over all BORS commits and performs a benchmark for each one
+# Assumes that the `collector` executable is already built
 
 set -euo pipefail
 
