@@ -24,7 +24,6 @@
 //!
 //! +   Absence of panics.
 //! +   The verified three implementations print only Fibonacci numbers.
-extern crate prusti_contracts;
 
 use prusti_contracts::*;
 

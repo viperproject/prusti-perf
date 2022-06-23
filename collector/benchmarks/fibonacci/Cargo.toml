@@ -1,6 +1,8 @@
+
 [package]
 name = "fibonacci"
 version = "0.0.1"
 authors = [ "Prusti Developers" ]
+edition = "2018"
 
 [workspace]
