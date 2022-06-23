@@ -30,16 +30,16 @@ git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while re
     VIPER_TOOLCHAIN=$(<viper-toolchain)
     if [ "$LAST_VIPER_TOOLCHAIN" != "$VIPER_TOOLCHAIN" ]; then
         echo "Using new viper toolchain $VIPER_TOOLCHAIN"
-        # ./x.py setup
+        ./x.py setup
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
-    # ./x.py build --release
+    ./x.py build --release
     cd "$PERF_DIR"
-    # RUST_LOG=info PRUSTI_CHECK_OVERFLOWS=false $COLLECTOR bench_local \
-    #     --id "commit:$SHA" \
-    #     --cargo "$CARGO" \
-    #     --profiles Check \
-    #     --scenarios Full \
-    #     "$RUSTC"
+    RUST_LOG=info PRUSTI_CHECK_OVERFLOWS=false $COLLECTOR bench_local \
+        --id "commit:$SHA" \
+        --cargo "$CARGO" \
+        --profiles Check \
+        --scenarios Full \
+        "$RUSTC"
     cd "$PRUSTI_DIR"
 done
