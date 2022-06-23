@@ -4,22 +4,42 @@
 
 set -euo pipefail
 
+if [ "$#" -gt 1 ]; then
+    echo "Usage: ./generate_prusti_benchs.sh [FROM_COMMIT]"
+    exit
+fi
+
+if [ "$#" -eq 1 ]; then
+    INITIAL_COMMIT="$1"
+else
+    INITIAL_COMMIT="origin/master"
+fi
+
+
+
 PERF_DIR=$(pwd)
 PRUSTI_DIR=$(readlink -f ../prusti-dev)
 COLLECTOR=$PERF_DIR/target/debug/collector
 CARGO=$(which cargo)
 RUSTC=$PRUSTI_DIR/target/release/prusti-rustc
+LAST_VIPER_TOOLCHAIN=""
 
 cd "$PRUSTI_DIR"
-git --no-pager log origin/master --author=bors --pretty=format:%H | while read -r SHA; do
+git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while read -r SHA; do
     git checkout "$SHA"
-    ./x.py build --release
+    VIPER_TOOLCHAIN=$(<viper-toolchain)
+    if [ "$LAST_VIPER_TOOLCHAIN" != "$VIPER_TOOLCHAIN" ]; then
+        echo "Using new viper toolchain $VIPER_TOOLCHAIN"
+        # ./x.py setup
+        LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
+    fi
+    # ./x.py build --release
     cd "$PERF_DIR"
-    RUST_LOG=info PRUSTI_CHECK_OVERFLOWS=false $COLLECTOR bench_local \
-        --id "commit:$SHA" \
-        --cargo "$CARGO" \
-        --profiles Check \
-        --scenarios Full \
-        "$RUSTC"
+    # RUST_LOG=info PRUSTI_CHECK_OVERFLOWS=false $COLLECTOR bench_local \
+    #     --id "commit:$SHA" \
+    #     --cargo "$CARGO" \
+    #     --profiles Check \
+    #     --scenarios Full \
+    #     "$RUSTC"
     cd "$PRUSTI_DIR"
 done
