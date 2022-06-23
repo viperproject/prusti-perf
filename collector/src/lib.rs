@@ -261,6 +261,7 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
         .current_dir("../prusti-dev")
         .arg("--no-pager")
         .arg("log")
+        .arg("origin/master")
         .arg("--author=bors")
         .arg("--pretty=format:%H,%aI")
         .output()
