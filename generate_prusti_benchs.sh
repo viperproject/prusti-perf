@@ -17,6 +17,7 @@ fi
 
 
 
+NUM_ITERATIONS=3
 PERF_DIR=$(pwd)
 PRUSTI_DIR=$(readlink -f ../prusti-dev)
 COLLECTOR=$PERF_DIR/target/debug/collector
@@ -40,6 +41,7 @@ git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while re
         --cargo "$CARGO" \
         --profiles Check \
         --scenarios Full \
+        --iterations "$NUM_ITERATIONS" \
         "$RUSTC"
     cd "$PRUSTI_DIR"
 done
