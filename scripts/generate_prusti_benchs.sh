@@ -5,7 +5,7 @@
 set -euo pipefail
 
 if [ "$#" -gt 1 ]; then
-    echo "Usage: ./generate_prusti_benchs.sh [FROM_COMMIT]"
+    echo "Usage: scripts/generate_prusti_benchs.sh [FROM_COMMIT]"
     exit
 fi
 
@@ -15,11 +15,9 @@ else
     INITIAL_COMMIT="origin/master"
 fi
 
+source scripts/vars
 
 
-NUM_ITERATIONS=3
-PERF_DIR=$(pwd)
-PRUSTI_DIR=$(readlink -f ../prusti-dev)
 COLLECTOR=$PERF_DIR/target/debug/collector
 CARGO=$(which cargo)
 RUSTC=$PRUSTI_DIR/target/release/prusti-rustc
@@ -34,14 +32,7 @@ git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while re
         ./x.py setup
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
-    ./x.py build --release
     cd "$PERF_DIR"
-    RUST_LOG=info PRUSTI_CHECK_OVERFLOWS=false $COLLECTOR bench_local \
-        --id "commit:$SHA" \
-        --cargo "$CARGO" \
-        --profiles Check \
-        --scenarios Full \
-        --iterations "$NUM_ITERATIONS" \
-        "$RUSTC"
+    scripts/run_benchmark.sh
     cd "$PRUSTI_DIR"
 done

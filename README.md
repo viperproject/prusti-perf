@@ -14,7 +14,7 @@ file in the `collector/benchmarks` directory.
 
 1. Ensure that the `prusti-dev` repo is installed adjacent to this repo.
 2. Build the collector by running the command `cargo build` from the `collector` directory
-3. Run the script `generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
+3. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
 4. To run the server, run the command `cargo run --bin site --release` from this directory
 
 ## Adding Benchmarks
