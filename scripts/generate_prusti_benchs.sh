@@ -17,10 +17,6 @@ fi
 
 source scripts/vars
 
-
-COLLECTOR=$PERF_DIR/target/debug/collector
-CARGO=$(which cargo)
-RUSTC=$PRUSTI_DIR/target/release/prusti-rustc
 LAST_VIPER_TOOLCHAIN=""
 
 cd "$PRUSTI_DIR"

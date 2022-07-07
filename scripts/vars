@@ -1,3 +1,6 @@
 NUM_ITERATIONS=3
 PERF_DIR=$(pwd)
 PRUSTI_DIR=$(readlink -f ../prusti-dev)
+COLLECTOR=$PERF_DIR/target/debug/collector
+RUSTC=$PRUSTI_DIR/target/release/prusti-rustc
+CARGO=$(which cargo)
