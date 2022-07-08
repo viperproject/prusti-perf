@@ -29,6 +29,6 @@ git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while re
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
     cd "$PERF_DIR"
-    scripts/run_benchmark.sh
+    scripts/run_benchmark.sh "$SHA"
     cd "$PRUSTI_DIR"
 done
