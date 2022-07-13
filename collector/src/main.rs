@@ -1385,7 +1385,11 @@ pub fn get_commit_or_fake_it(sha: &str) -> anyhow::Result<Commit> {
             date: c.time.into(),
         })
         .unwrap_or_else(|| {
-            panic!("Cannot find commit {}", sha)
+            log::warn!("utilizing fake commit!");
+            Commit {
+                sha: sha.into(),
+                date: database::Date::ymd_hms(2000, 01, 01, 0, 0, 0),
+            }
         }))
 }
 
