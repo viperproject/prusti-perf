@@ -12,7 +12,7 @@ The site launches on port 2346 by default, which can be overridden by setting
 the `PORT` environment variable.
 
 ```
-git clone https://github.com/rust-lang/rustc-perf.git
+git clone https://github.com/viperproject/prusti-perf.git
 ```
 
 ## Launching

@@ -665,7 +665,7 @@ async fn summarize_run(
     }
 
     const DISAGREEMENT: &str = "If you disagree with this performance assessment, \
-    please file an issue in [rust-lang/rustc-perf](https://github.com/rust-lang/rustc-perf/issues/new).";
+    please file an issue in [rust-lang/rustc-perf](https://github.com/viperproject/prusti-perf/issues/new).";
     let footer = format!("{DISAGREEMENT}{errors}");
 
     let direction = inst_primary.direction().or(inst_secondary.direction());

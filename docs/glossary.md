@@ -4,7 +4,7 @@ The following is a glossary of domain specific terminology. Although benchmarks 
 
 ## Basic terms
 
-* **benchmark**: the source of a crate which will be used to benchmark rustc. For example, ["hello world"](https://github.com/rust-lang/rustc-perf/tree/master/collector/benchmarks/helloworld).
+* **benchmark**: the source of a crate which will be used to benchmark rustc. For example, ["hello world"](https://github.com/viperproject/prusti-perf/tree/master/collector/benchmarks/helloworld).
 * **profile**: a [cargo profile](https://doc.rust-lang.org/cargo/reference/profiles.html). Note: the database uses "opt" whereas cargo uses "release". 
 * **scenario**: The scenario under which a user is compiling their code. Currently, this is the incremental cache state and an optional change in the source since last compilation (e.g., full incremental cache and a `println!` statement is added).  
 * **metric**: a name of a quantifiable metric being measured (e.g., instruction count)
@@ -13,8 +13,8 @@ The following is a glossary of domain specific terminology. Although benchmarks 
 
 ## Benchmarks
 
-* **stress test benchmark**: a benchmark that is specifically designed to stress a certain part of the compiler. For example, [projection-caching](https://github.com/rust-lang/rustc-perf/tree/master/collector/benchmarks/projection-caching) stresses the compiler's projection caching mechanisms.
-* **real world benchmark**: a benchmark based on a real world crate. These are typically copied as-is from crates.io. For example, [serde](https://github.com/rust-lang/rustc-perf/tree/master/collector/benchmarks/serde-1.0.136) is a popular crate and the benchmark has not been altered from a release of serde on crates.io. 
+* **stress test benchmark**: a benchmark that is specifically designed to stress a certain part of the compiler. For example, [projection-caching](https://github.com/viperproject/prusti-perf/tree/master/collector/benchmarks/projection-caching) stresses the compiler's projection caching mechanisms.
+* **real world benchmark**: a benchmark based on a real world crate. These are typically copied as-is from crates.io. For example, [serde](https://github.com/viperproject/prusti-perf/tree/master/collector/benchmarks/serde-1.0.136) is a popular crate and the benchmark has not been altered from a release of serde on crates.io. 
 
 ## Testing 
 
@@ -31,7 +31,7 @@ The following is a glossary of domain specific terminology. Although benchmarks 
 
 * **artifact comparisons**: the comparison of two artifacts. This is composed of many test result comparisons. The [comparison page](https://perf.rust-lang.org/compare.html) shows a single artifact comparison between two artifacts.
 * **test result comparison**: the delta between two test results for the same test case but different artifacts. The [comparison page](https://perf.rust-lang.org/compare.html) lists all the test result comparisons as percentages between two runs.  
-* **significance threshold**: the threshold at which a test result comparison is considered "significant" (i.e., a real change in performance and not just noise). You can see how this is calculated [here](https://github.com/rust-lang/rustc-perf/blob/master/docs/comparison-analysis.md#what-makes-a-test-result-significant).
+* **significance threshold**: the threshold at which a test result comparison is considered "significant" (i.e., a real change in performance and not just noise). You can see how this is calculated [here](https://github.com/viperproject/prusti-perf/blob/master/docs/comparison-analysis.md#what-makes-a-test-result-significant).
 * **significant test result comparison**: a test result comparison above the significance threshold. Significant test result comparisons can be thought of as being "statistically significant".
 * **relevant test result comparison**: a test result comparison can be significant but still not be relevant (i.e., worth paying attention to). Relevance is a factor of the test result comparison's significance and magnitude. Comparisons are considered relevant if they are significant and have at least a small magnitude .
 * **test result comparison magnitude**: how "large" the delta is between the two test result's under comparison. This is determined by the average of two factors: the absolute size of the change (i.e., a change of 5% is larger than a change of 1%) and the amount above the significance threshold (i.e., a change that is 5x the significance threshold is larger than a change 1.5x the significance threshold).

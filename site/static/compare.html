@@ -534,7 +534,7 @@
                             <span class="tooltiptext">
                                 Whether to show test case results that are not relevant (i.e., not significant or 
                                 have a large enough magnitude). You can see 
-                                <a href="https://github.com/rust-lang/rustc-perf/blob/master/docs/comparison-analysis.md#how-is-relevance-of-a-test-run-summary-determined">
+                                <a href="https://github.com/viperproject/prusti-perf/blob/master/docs/comparison-analysis.md#how-is-relevance-of-a-test-run-summary-determined">
                                 here</a> how relevance is calculated.
                             </span>
                         </span>
@@ -665,7 +665,7 @@
     <br>
     <div id="as-of"></div>
     <div style="text-align: center;">
-        <a href="https://github.com/rust-lang/rustc-perf">Contribute on GitHub</a>
+        <a href="https://github.com/viperproject/prusti-perf">Contribute on GitHub</a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/msgpack-lite/0.1.26/msgpack.min.js"></script>
     <script src="shared.js"></script>
@@ -1000,7 +1000,7 @@
                     return `/detailed-query.html?commit=${commit.commit}&base_commit=${baseCommit.commit}&benchmark=${testCase.benchmark + "-" + testCase.profile}&scenario=${testCase.scenario}`;
                 },
                 benchmarkLink(benchmark) {
-                    return "https://github.com/rust-lang/rustc-perf/tree/master/collector/benchmarks/" + benchmark;
+                    return "https://github.com/viperproject/prusti-perf/tree/master/collector/benchmarks/" + benchmark;
                 },
                 graphLink(commit, stat, testCase) {
                     let date = new Date(commit.date);
@@ -1037,7 +1037,7 @@
                         How much a particular result is over the significance threshold. A factor of 2.50x
                         means
                         the result is 2.5 times over the significance threshold. You can see <a
-                            href="https://github.com/rust-lang/rustc-perf/blob/master/docs/comparison-analysis.md#what-makes-a-test-result-significant">
+                            href="https://github.com/viperproject/prusti-perf/blob/master/docs/comparison-analysis.md#what-makes-a-test-result-significant">
                             here</a> how the significance threshold is calculated.
                     </span>
                 </span>
