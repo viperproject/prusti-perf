@@ -15,7 +15,7 @@ file in the `collector/benchmarks` directory.
 1. Run the script `scripts/setup_aws.sh` to install necessary dependencies
 2. Run the database with the command `scripts/start_db.sh`
 3. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
-4. To run the server, run the command `cargo run --bin site --release` from this directory
+4. To run the server, run the command `scripts/run_site.sh` from this directory
 
 ## Adding Benchmarks
 
