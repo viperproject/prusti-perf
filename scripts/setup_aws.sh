@@ -28,6 +28,11 @@ sudo apt-get install -y --no-install-recommends \
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+rm get-docker.sh
+
+
 if ! grep perf_event_paranoid /etc/sysctl.conf > /dev/null; then
   sudo bash -c 'echo "kernel.perf_event_paranoid=-1" >> /etc/sysctl.conf'
   sudo sysctl -p /etc/sysctl.conf 
@@ -35,12 +40,18 @@ fi
 
 cd "$HOME"
 
-git clone git@github.com:viperproject/prusti-dev.git
+git clone https://github.com/viperproject/prusti-dev.git
 
 if ! grep VIPER_HOME ~/.profile > /dev/null; then
   echo "export VIPER_HOME=$HOME/prusti-dev/viper_tools/backends" >> ~/.profile
 fi
 
-cd prusti-perf/collector
+sh <(curl -L https://nixos.org/nix/install) --daemon
+cd ~/prusti-perf/z3nix
+nix-build -E 'with import <nixpkgs> {}; callPackage ./default.nix {}'
+
+cd ~/prusti-perf/collector
 cargo build
+
+
 
