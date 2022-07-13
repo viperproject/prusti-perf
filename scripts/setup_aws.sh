@@ -3,6 +3,13 @@
 set -euo pipefail
 
 sudo apt-get update -y
+
+# Perf
+sudo apt-get install -y \
+  linux-tools-5.15.0-1011-aws \
+  linux-tools-aws \
+  linux-tools-common 
+
 sudo apt-get install -y --no-install-recommends \
       ca-certificates \
       cmake \
@@ -12,9 +19,6 @@ sudo apt-get install -y --no-install-recommends \
       git \
       libc6-dev \
       libssl-dev \
-      linux-tools-5.15.0-1011-aws \
-      linux-tools-aws \
-      linux-tools-common \
       make \
       mosh \
       pkg-config \

@@ -20,6 +20,7 @@ source scripts/vars
 LAST_VIPER_TOOLCHAIN=""
 
 cd "$PRUSTI_DIR"
+git fetch
 git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while read -r SHA; do
     git checkout "$SHA"
     VIPER_TOOLCHAIN=$(<viper-toolchain)
@@ -29,6 +30,6 @@ git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while re
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
     cd "$PERF_DIR"
-    scripts/run_benchmark.sh "$SHA"
+    scripts/run_benchmark.sh
     cd "$PRUSTI_DIR"
 done
