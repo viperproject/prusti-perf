@@ -449,7 +449,7 @@ async fn write_triage_summary(
     let mut result = if let Some(pr) = comparison.b.pr {
         let title = github::pr_title(pr).await;
         format!(
-            "{} [#{}](https://github.com/rust-lang/rust/pull/{})",
+            "{} [#{}](https://github.com/viperproject/prusti-dev/pull/{})",
             title, pr, pr
         )
     } else {
@@ -1231,7 +1231,7 @@ async fn generate_report(
             .iter()
             .map(|github::PullRequest { title, number }| {
                 format!(
-                    "- [#{} {}](https://github.com/rust-lang/rust/pull/{})",
+                    "- [#{} {}](https://github.com/viperproject/prusti-dev/pull/{})",
                     number, title, number
                 )
             })

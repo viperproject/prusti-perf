@@ -75,7 +75,7 @@ pub async fn handle_github(
             let include = captures.get(2).map(|v| v.as_str());
             let exclude = captures.get(3).map(|v| v.as_str());
             let runs = captures.get(4).and_then(|v| v.as_str().parse::<i32>().ok());
-            let commit = commit.trim_start_matches("https://github.com/rust-lang/rust/commit/");
+            let commit = commit.trim_start_matches("https://github.com/viperproject/prusti-dev/commit/");
             {
                 let conn = ctxt.conn().await;
                 conn.queue_pr(request.issue.number, include, exclude, runs)
@@ -92,7 +92,7 @@ pub async fn handle_github(
     for capture in captures {
         if let Some(rollup_merge) = capture.get(1).map(|c| c.as_str().to_owned()) {
             let rollup_merge =
-                rollup_merge.trim_start_matches("https://github.com/rust-lang/rust/commit/");
+                rollup_merge.trim_start_matches("https://github.com/viperproject/prusti-dev/commit/");
             let client = reqwest::Client::new();
             pr_and_try_for_rollup(
                 &client,
@@ -112,7 +112,7 @@ pub async fn handle_github(
     for capture in captures {
         if let Some(rollup_merge) = capture.get(1).map(|c| c.as_str().to_owned()) {
             let rollup_merge =
-                rollup_merge.trim_start_matches("https://github.com/rust-lang/rust/commit/");
+                rollup_merge.trim_start_matches("https://github.com/viperproject/prusti-dev/commit/");
 
             // This just creates or updates the branch for this merge commit.
             // Intended for resolving the race condition of master merging in

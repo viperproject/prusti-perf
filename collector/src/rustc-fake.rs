@@ -252,7 +252,7 @@ fn main() {
                     // We disable jemalloc's delayed purging to eliminate noise
                     // when benchmarks are around the 10 second mark.
                     //
-                    // See https://github.com/rust-lang/rust/pull/77162 for some
+                    // See https://github.com/viperproject/prusti-dev/pull/77162 for some
                     // further details.
                     .env("MALLOC_CONF", "dirty_decay_ms:0,muzzy_decay_ms:0")
                     .arg("--tool=cachegrind")

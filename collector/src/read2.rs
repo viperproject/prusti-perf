@@ -1,5 +1,5 @@
 // This is copied from
-// https://github.com/rust-lang/rust/blob/master/src/tools/compiletest/src/read2.rs
+// https://github.com/viperproject/prusti-dev/blob/master/src/tools/compiletest/src/read2.rs
 // and falls under the MIT or Apache 2.0 licenses.
 pub use self::imp::read2;
 

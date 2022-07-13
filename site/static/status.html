@@ -166,7 +166,7 @@
             } else if (reason.InProgress) {
                 return `${reason_to_string(reason.InProgress)} - in progress`;
             } else if (reason["Master"] != undefined && reason.Master.pr) {
-                return `<a href="https://github.com/rust-lang/rust/pull/${reason["Master"].pr}">
+                return `<a href="https://github.com/viperproject/prusti-dev/pull/${reason["Master"].pr}">
                     #${reason["Master"].pr}</a>${reason.Master.is_try_parent ? " - Try commit parent" : ""
                     }`;
             } else if (reason["Master"] != undefined && reason.Master.pr == 0) {
@@ -174,7 +174,7 @@
             } else if (reason["Try"] != undefined && reason.Try.pr) {
                 return `
                 Try for
-                <a href="https://github.com/rust-lang/rust/pull/${reason["Try"].pr}">
+                <a href="https://github.com/viperproject/prusti-dev/pull/${reason["Try"].pr}">
                     #${reason["Try"].pr}
                 </a>`;
             } else {
@@ -184,7 +184,7 @@
         }
 
         function commit_url(commit) {
-            return `<a href="https://github.com/rust-lang/rust/commit/${commit.sha}">${commit.sha.substr(0, 13)}</a>`;
+            return `<a href="https://github.com/viperproject/prusti-dev/commit/${commit.sha}">${commit.sha.substr(0, 13)}</a>`;
         }
 
         function format_duration(seconds) {
