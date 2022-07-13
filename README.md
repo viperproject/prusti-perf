@@ -2,7 +2,7 @@
 
 This repository contains two primary crates: 
 * [`collector`](./collector): gathers data for each bors commit
-* [`site`](./site): [displays](https://perf.rust-lang.org) the data and provides a GitHub bot for on-demand benchmarking
+* [`site`](./site): [displays](http://34.228.27.164:2346) the data and provides a GitHub bot for on-demand benchmarking
 
 Additional documentation on running and setting up the frontend and backend can
 be found in the `README` files in the `collector` and `site` directories.

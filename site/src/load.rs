@@ -74,7 +74,7 @@ impl TryCommit {
 
     pub fn comparison_url(&self) -> String {
         format!(
-            "https://perf.rust-lang.org/compare.html?start={}&end={}",
+            "http://34.228.27.164:2346/compare.html?start={}&end={}",
             self.parent_sha, self.sha
         )
     }

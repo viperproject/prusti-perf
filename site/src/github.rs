@@ -573,7 +573,7 @@ async fn post_comparison_comment(ctxt: &SiteCtxt, commit: QueuedCommit, is_maste
 
 fn make_comparison_url(commit: &QueuedCommit, stat: Metric) -> String {
     format!(
-        "https://perf.rust-lang.org/compare.html?start={}&end={}&stat={}",
+        "http://34.228.27.164:2346/compare.html?start={}&end={}&stat={}",
         commit.parent_sha,
         commit.sha,
         stat.as_str()

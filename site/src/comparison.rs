@@ -1248,7 +1248,7 @@ async fn generate_report(
 TODO: Summary
 
 Triage done by **@???**.
-Revision range: [{first_commit}..{last_commit}](https://perf.rust-lang.org/?start={first_commit}&end={last_commit}&absolute=false&stat=instructions%3Au)
+Revision range: [{first_commit}..{last_commit}](http://34.228.27.164:2346/?start={first_commit}&end={last_commit}&absolute=false&stat=instructions%3Au)
 
 {summary}
 
@@ -1300,7 +1300,7 @@ fn compare_link(start: &ArtifactId, end: &ArtifactId) -> String {
         ArtifactId::Commit(c) => &c.sha,
     };
     format!(
-        "https://perf.rust-lang.org/compare.html?start={}&end={}&stat=instructions:u",
+        "http://34.228.27.164:2346/compare.html?start={}&end={}&stat=instructions:u",
         start, end
     )
 }

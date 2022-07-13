@@ -2,7 +2,7 @@
 
 The following is a detailed explanation of the process undertaken to automate the analysis of test results for two artifacts of interest (artifact A and B).
 
-This analysis can be done by hand, by using the [comparison page](https://perf.rust-lang.org/compare.html) and entering the two artifacts of interest in the form at the top.
+This analysis can be done by hand, by using the [comparison page](http://34.228.27.164:2346/compare.html) and entering the two artifacts of interest in the form at the top.
 
 ## The goal
 
