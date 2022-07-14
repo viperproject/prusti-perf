@@ -7,10 +7,19 @@ source scripts/vars
 cd "$PRUSTI_DIR"
 SHA=$(git rev-parse HEAD)
 ./x.py build --release
-cd "$PERF_DIR"
-export Z3_EXE=$HOME/prusti-perf/z3nix/result/bin/z3 
-export PRUSTI_CHECK_OVERFLOWS=false 
 
+# Start Prusti Server
+export Z3_EXE=$HOME/prusti-perf/z3nix/result/bin/z3
+PRUSTI_SERVER="$PRUSTI_DIR/target/release/prusti-server-driver"
+PRUSTI_SERVER_PORT=12345
+$PRUSTI_SERVER --port "$PRUSTI_SERVER_PORT"&
+sleep 2
+
+cd "$PERF_DIR"
+
+export PRUSTI_ENABLE_CACHE=false
+export PRUSTI_SERVER_ADDRESS="localhost:$PRUSTI_SERVER_PORT"
+export PRUSTI_CHECK_OVERFLOWS=false 
 # Considerations for the number of parallel verifiers
 #
 # 1. Should appropriately represent the typical instantiation of this parameter,
@@ -30,8 +39,18 @@ else
   BENCH_ID="commit:$SHA"
 fi
 
-echo "Running benchmark $BENCH_ID"
 
+WARMUP_ID="warmup-$(date +%s)"
+echo "Running warmup $WARMUP_ID"
+$COLLECTOR bench_local \
+    --id "warmup-$(date +%s)" \
+    --cargo "$CARGO" \
+    --profiles Check \
+    --scenarios Full \
+    --db postgresql://prusti:prusti@127.0.0.1 \
+    "$RUSTC"
+
+echo "Running benchmark $BENCH_ID"
 $COLLECTOR bench_local \
     --id "$BENCH_ID" \
     --cargo "$CARGO" \
@@ -40,3 +59,5 @@ $COLLECTOR bench_local \
     --iterations "$NUM_ITERATIONS" \
     --db postgresql://prusti:prusti@127.0.0.1 \
     "$RUSTC"
+
+curl -XPOST localhost:2345/perf/onpush
