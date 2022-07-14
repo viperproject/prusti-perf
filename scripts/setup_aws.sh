@@ -22,6 +22,8 @@ sudo apt-get install -y --no-install-recommends \
       make \
       mosh \
       pkg-config \
+      postgresql-client-common \
+      postgresql-client-14 \
       unzip \
       silversearcher-ag \
       zlib1g-dev

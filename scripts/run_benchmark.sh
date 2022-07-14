@@ -4,21 +4,18 @@ set -euo pipefail
 
 source scripts/vars
 
+# Note that if USE_SERVER=true, then `perf` will not include any metrics for the backend
+# This makes the results more consistent across runs, but fails to account for improvements
+# due to more performant encodings to viper
+USE_SERVER=false
+
 cd "$PRUSTI_DIR"
 SHA=$(git rev-parse HEAD)
 ./x.py build --release
 
-# Start Prusti Server
+export LD_LIBRARY_PATH=/usr/lib/jvm/default-java/lib/server
 export Z3_EXE=$HOME/prusti-perf/z3nix/result/bin/z3
-PRUSTI_SERVER="$PRUSTI_DIR/target/release/prusti-server-driver"
-PRUSTI_SERVER_PORT=12345
-$PRUSTI_SERVER --port "$PRUSTI_SERVER_PORT"&
-sleep 2
-
-cd "$PERF_DIR"
-
 export PRUSTI_ENABLE_CACHE=false
-export PRUSTI_SERVER_ADDRESS="localhost:$PRUSTI_SERVER_PORT"
 export PRUSTI_CHECK_OVERFLOWS=false 
 # Considerations for the number of parallel verifiers
 #
@@ -33,22 +30,36 @@ export PRUSTI_CHECK_OVERFLOWS=false
 # due to https://github.com/viperproject/silicon/issues/535
 export PRUSTI_EXTRA_VERIFIER_ARGS="--numberOfParallelVerifiers=4"
 
+if [ "$USE_SERVER" == "true" ];  then
+  PRUSTI_SERVER="$PRUSTI_DIR/target/release/prusti-server-driver"
+  PRUSTI_SERVER_PORT=12345
+  export PRUSTI_SERVER_ADDRESS="localhost:$PRUSTI_SERVER_PORT"
+  $PRUSTI_SERVER --port "$PRUSTI_SERVER_PORT"&
+  SERVER_PID=$!
+  sleep 2
+fi
+
+cd "$PERF_DIR"
+
+
 if [ "$#" -eq 1 ]; then
   BENCH_ID="$1"
 else
   BENCH_ID="commit:$SHA"
 fi
 
-
-WARMUP_ID="warmup-$(date +%s)"
-echo "Running warmup $WARMUP_ID"
-$COLLECTOR bench_local \
-    --id "warmup-$(date +%s)" \
-    --cargo "$CARGO" \
-    --profiles Check \
-    --scenarios Full \
-    --db postgresql://prusti:prusti@127.0.0.1 \
-    "$RUSTC"
+# Warmup is only useful if server is used
+if [ "$USE_SERVER" == "true" ];  then
+  WARMUP_ID="warmup-$(date +%s)"
+  echo "Running warmup $WARMUP_ID"
+  $COLLECTOR bench_local \
+      --id "warmup-$(date +%s)" \
+      --cargo "$CARGO" \
+      --profiles Check \
+      --scenarios Full \
+      --db postgresql://prusti:prusti@127.0.0.1 \
+      "$RUSTC"
+fi
 
 echo "Running benchmark $BENCH_ID"
 $COLLECTOR bench_local \
@@ -60,4 +71,8 @@ $COLLECTOR bench_local \
     --db postgresql://prusti:prusti@127.0.0.1 \
     "$RUSTC"
 
-curl -XPOST localhost:2345/perf/onpush
+if [ "$USE_SERVER" == "true" ];  then
+  kill "$SERVER_PID"
+fi
+
+curl -XPOST localhost:2345/perf/onpush || echo "Unable to refresh perf site (probably it is not running)"

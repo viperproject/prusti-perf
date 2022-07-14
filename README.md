@@ -27,6 +27,10 @@ the `cargo build` command.
 
 Currently all benchmarks use Z3 version 4.8.6.
 
+10 Iterations, still yields ~2% difference on consecutive runs.
+
+Excluding Viper parts from perf (by running in server) yields ~0.02% difference on 3 iterations!
+
 ## TODO
 
 - [ ] Use Viperserver for more consistent results
