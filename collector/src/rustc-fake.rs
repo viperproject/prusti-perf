@@ -77,6 +77,8 @@ fn main() {
                 let has_perf = cmd.output().is_ok();
                 assert!(has_perf);
                 cmd.arg("stat")
+                    .arg("-r")
+                    .arg(env::var("BENCH_PERF_ITERATIONS").unwrap_or("1".to_string()))
                     // perf respects this environment variable for e.g., percents in
                     // the output, but we want standard output on all systems.
                     // See #753 for more details.

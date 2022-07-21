@@ -23,12 +23,7 @@ enum Thing {
   Case22(u32, u32),
   Case23(u32, u32),
   Case24(u32, u32),
-  Case25(u32, u32),
-  Case26(u32, u32),
-  Case27(u32, u32),
-  Case28(u32, u32),
-  Case29(u32, u32),
-  Case30(u32, u32) 
+  Case25(u32, u32)
 }
 
 fn go(thing: &Thing) -> u32 {

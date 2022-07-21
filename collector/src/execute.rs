@@ -1555,15 +1555,8 @@ fn process_stat_output(
         let _unit = get!(parts.next());
         let name = get!(parts.next());
         let _time = get!(parts.next());
-        let pct = get!(parts.next());
         if cnt == "<not supported>" || cnt.len() == 0 {
             continue;
-        }
-        if !pct.starts_with("100.") {
-            panic!(
-                "measurement of `{}` only active for {}% of the time",
-                name, pct
-            );
         }
         stats.insert(
             name.to_owned(),
