@@ -95,7 +95,7 @@ function make_settings(callback) {
             let list = document.getElementById("stats");
             if (list) {
                 list.innerHTML = phases_html;
-                list.value = 'instructions:u';
+                list.value = 'wall-time';
             }
             document.getElementById("as-of").innerHTML =
                 "Updated as of: " + (new Date(data.as_of)).toLocaleString();

@@ -453,7 +453,7 @@
             let values = Object.assign({}, {
                 start: "",
                 end: "",
-                stat: "instructions:u",
+                stat: "wall-time",
                 kind: "raw",
             }, state);
             get_json("/graphs", values).then(prepData).then(data =>

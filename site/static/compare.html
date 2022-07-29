@@ -880,7 +880,7 @@
                     return this.data.b.commit.substring(0, 7);
                 },
                 stat() {
-                    return findQueryParam("stat") || "instructions:u";
+                    return findQueryParam("stat") || "wall-time";
                 },
                 summary() {
                     // Create object with each test case that is not filtered out as a key
@@ -1137,7 +1137,7 @@
             let values = Object.assign({}, {
                 start: "",
                 end: "",
-                stat: "instructions:u",
+                stat: "wall-time",
             }, state);
             makeRequest("/get", values).then(function (data) {
                 app.data = data;
