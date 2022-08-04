@@ -46,10 +46,10 @@ privileges. Ask in #t-compiler/help on [Zulip](rust-lang.zulipchat.com) and/or
 ping `@simulacrum` as a starting point.
 
 There are two ways for that person to do a benchmark run.
-- The easier way: they enter `@bors try @rust-timer queue` as a comment in
+- The easier way: they enter `bors try @rust-timer queue` as a comment in
   the PR. This queues a try build and a benchmarking run. Several hours later,
   the results will be available at the given URL.
-- The harder way: they must first enter `@bors try` to trigger a try build. Once
+- The harder way: they must first enter `bors try` to trigger a try build. Once
   that completes, they must enter `@rust-timer build $MERGE`, where `$MERGE` is
   the full 40 character merge revision ID from the try build.
 

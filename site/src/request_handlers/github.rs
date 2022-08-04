@@ -31,7 +31,7 @@ async fn handle_push(ctxt: Arc<SiteCtxt>, push: github::Push) -> ServerResult<gi
     );
     let main_repo_client = client::Client::from_ctxt(
         &ctxt,
-        "https://api.github.com/repos/rust-lang/rust".to_owned(),
+        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
     );
     if push.r#ref != "refs/heads/master" || push.sender.login != "bors" {
         return Ok(github::Response);
@@ -73,7 +73,7 @@ async fn handle_issue(
 ) -> ServerResult<github::Response> {
     let main_client = client::Client::from_ctxt(
         &ctxt,
-        "https://api.github.com/repos/rust-lang/rust".to_owned(),
+        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
     );
     let ci_client = client::Client::from_ctxt(
         &ctxt,
@@ -168,7 +168,7 @@ fn build_captures(comment: &github::Comment) -> impl Iterator<Item = (&str, rege
             captures.get(1).map(|m| {
                 let commit = m
                     .as_str()
-                    .trim_start_matches("https://github.com/rust-lang/rust/commit/");
+                    .trim_start_matches("https://github.com/zgrannan/prusti-dev/commit/");
                 (commit, captures)
             })
         })

@@ -68,7 +68,7 @@ pub async fn post_finished(ctxt: &SiteCtxt) {
 async fn post_comparison_comment(ctxt: &SiteCtxt, commit: QueuedCommit, is_master_commit: bool) {
     let client = super::client::Client::from_ctxt(
         ctxt,
-        "https://api.github.com/repos/rust-lang/rust".to_owned(),
+        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
     );
     let pr = commit.pr;
     let body = match summarize_run(ctxt, commit, is_master_commit).await {
@@ -174,7 +174,7 @@ async fn summarize_run(
     }
 
     const DISAGREEMENT: &str = "If you disagree with this performance assessment, \
-    please file an issue in [rust-lang/rustc-perf](https://github.com/rust-lang/rustc-perf/issues/new).";
+    please file an issue in [prusti-dev/prusti-perf](https://github.com/prusti-dev/prusti-perf/issues/new).";
     let footer = format!("{DISAGREEMENT}{errors}");
 
     let direction = inst_primary.direction().or(inst_secondary.direction());
