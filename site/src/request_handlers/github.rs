@@ -27,7 +27,7 @@ pub async fn handle_github(
 async fn handle_push(ctxt: Arc<SiteCtxt>, push: github::Push) -> ServerResult<github::Response> {
     let ci_client = client::Client::from_ctxt(
         &ctxt,
-        "https://api.github.com/repos/rust-lang-ci/rust".to_owned(),
+        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
     );
     let main_repo_client = client::Client::from_ctxt(
         &ctxt,
@@ -77,7 +77,7 @@ async fn handle_issue(
     );
     let ci_client = client::Client::from_ctxt(
         &ctxt,
-        "https://api.github.com/repos/rust-lang-ci/rust".to_owned(),
+        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
     );
     if comment.body.contains(" homu: ") {
         if let Some(sha) = parse_homu_comment(&comment.body).await {

@@ -25,7 +25,7 @@ pub async fn unroll_rollup(
             use std::fmt::Write;
             write!(
                 &mut string,
-                "|#{pr}|[{commit}](https://github.com/rust-lang-ci/rust/commit/{commit})|\n",
+                "|#{pr}|[{commit}](https://github.com/zgrannan/prusti-dev/commit/{commit})|\n",
                 pr = c.original_pr_number,
                 commit = c.sha
             )

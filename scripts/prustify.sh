@@ -8,3 +8,4 @@ function subst() {
 subst "s/rust-lang\/rustc-perf/prusti-dev\/prusti-perf/g"
 subst "s/viperproject\/prusti-dev/zgrannan\/prusti-dev/g"
 subst "s/rust-lang\/rust/zgrannan\/prusti-dev/g"
+subst "s/rust-lang-ci\/rust/zgrannan\/prusti-dev/g"
