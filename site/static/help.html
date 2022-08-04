@@ -34,7 +34,7 @@
     <div class="help-content">
         <h3><b><code>@rust-timer</code> commands</b></h3>
         <p><code>@rust-timer</code> supports several commands, the most common (and simple) being
-            <code>@rust-timer queue</code>. This command is usually invoked as <code>@bors try @rust-timer queue</code>,
+            <code>@rust-timer queue</code>. This command is usually invoked as <code>bors try @rust-timer queue</code>,
             which starts a bors "try" run (not a merge). <code>@rust-timer</code> will wait for the try run to finish,
             and if it succeeds will then queue a perf run.
         </p>
@@ -42,7 +42,7 @@
         <ul>
             <li><code>include=&lt;INCLUDE&gt;</code> only runs benchmarks with <code>&lt;INCLUDE&gt;</code> in their
                 title. For example, if you just want to run rustdoc benchmarks, do
-                <code>@bors try @rust-timer queue include=-doc</code>; the <code>-doc</code> matches the
+                <code>bors try @rust-timer queue include=-doc</code>; the <code>-doc</code> matches the
                 <code>-doc</code> appended to rustdoc benchmarks. <code>&lt;INCLUDE&gt;</code> is a comma-separated list
                 of substrings; only one of the items in the list of substrings must match.
             </li>

@@ -1220,7 +1220,7 @@ fn main_result() -> anyhow::Result<i32> {
         Commands::InstallNext => {
             let last_sha = Command::new("git")
                 .arg("ls-remote")
-                .arg("https://github.com/rust-lang/rust.git")
+                .arg("https://github.com/viperproject/prusti-dev.git")
                 .arg("master")
                 .output()
                 .unwrap();

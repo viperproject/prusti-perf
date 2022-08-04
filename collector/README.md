@@ -100,7 +100,7 @@ The following options alter the behaviour of the `bench_local` subcommand.
   downloading a recent Rust compiler and measuring the time taken to compile
   it. This benchmark works very differently to all the other benchmarks. For
   example, `--profiles` and `--scenarios` don't affect it, and the given `ID`
-  is used as the `rust-lang/rust` ref (falling back to `HEAD` if the `ID` is
+  is used as the `viperproject/prusti-dev` ref (falling back to `HEAD` if the `ID` is
   not a valid ref). It is for advanced and CI use only. This option enables it.
 - `--cargo <CARGO>`: a path (relative or absolute) to a Cargo executable that
   will be used to build the benchmarks. By default, the nightly Cargo installed
@@ -217,7 +217,7 @@ system should expand to other platforms (e.g., Windows) with some work.
 
 The Linux `perf` tool is used to gather most of the data.
 
-Benchmarking will only work for commits that have been built on rust-lang/rust
+Benchmarking will only work for commits that have been built on viperproject/prusti-dev
 repository in the last ~168 days, including try commits. Local benchmarking is
 of course theoretically possible for any commit, though some of the benchmarks
 may require recent compilers to build without patching.

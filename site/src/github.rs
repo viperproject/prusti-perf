@@ -407,14 +407,14 @@ pub async fn enqueue_sha(issue: Issue, ctxt: &SiteCtxt, commit: String) -> Resul
     let commit_response = get_commit(&client, ctxt, &issue.repository_url, &commit)
         .await
         .map_err(|e| e.to_string())?;
-    if commit_response.parents.len() != 2 {
-        log::error!(
-            "Bors try commit {} unexpectedly has {} parents.",
-            commit_response.sha,
-            commit_response.parents.len()
-        );
-        return Ok(());
-    }
+    // if commit_response.parents.len() > 2 {
+    //     log::error!(
+    //         "Bors try commit {} unexpectedly has {} parents.",
+    //         commit_response.sha,
+    //         commit_response.parents.len()
+    //     );
+    //     return Ok(());
+    // }
     let try_commit = TryCommit {
         sha: commit_response.sha.clone(),
         parent_sha: commit_response.parents[0].sha.clone(),
@@ -486,7 +486,7 @@ where
     let client = reqwest::Client::new();
     let req = client
         .post(&format!(
-            "https://api.github.com/repos/rust-lang/rust/issues/{}/comments",
+            "https://api.github.com/repos/viperproject/prusti-dev/issues/{}/comments",
             pr
         ))
         .json(&PostComment {
@@ -813,7 +813,7 @@ pub(crate) struct PullRequest {
 
 /// Fetch all merged PRs that are labeled with `perf-regression` and not `perf-regression-triaged`
 pub(crate) async fn untriaged_perf_regressions() -> Result<Vec<PullRequest>, BoxedError> {
-    let url = "https://api.github.com/search/issues?q=repo:rust-lang/rust+label:perf-regression+-label:perf-regression-triaged+is:merged".to_owned();
+    let url = "https://api.github.com/search/issues?q=repo:viperproject/prusti-dev+label:perf-regression+-label:perf-regression-triaged+is:merged".to_owned();
     let request = github_request(&url);
     let body = send_request(request).await?;
     Ok(body
@@ -841,7 +841,7 @@ pub(crate) async fn untriaged_perf_regressions() -> Result<Vec<PullRequest>, Box
 
 /// Get the title of a PR with the given number
 pub(crate) async fn pr_title(pr: u32) -> String {
-    let url = format!("https://api.github.com/repos/rust-lang/rust/pulls/{}", pr);
+    let url = format!("https://api.github.com/repos/viperproject/prusti-dev/pulls/{}", pr);
     let request = github_request(&url);
 
     async fn send(request: reqwest::RequestBuilder) -> Result<String, BoxedError> {

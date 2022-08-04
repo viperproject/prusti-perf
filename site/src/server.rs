@@ -631,7 +631,10 @@ fn verify_gh(config: &Config, req: &http::request::Parts, body: &[u8]) -> bool {
     let gh_header = gh_header.and_then(|g| g.to_str().ok().map(|s| s.to_owned()));
     let gh_header = match gh_header {
         Some(v) => v,
-        None => return false,
+        None => {
+            eprintln!("Could not find github header");
+            return false
+        }
     };
     verify_gh_sig(config, &gh_header, &body).unwrap_or(false)
 }
@@ -646,6 +649,7 @@ fn verify_gh_sig(cfg: &Config, header: &str, body: &[u8]) -> Option<bool> {
     if let Ok(()) = hmac::verify(&key, body, &sha) {
         return Some(true);
     }
+    eprintln!("HMAC verification failed");
 
     Some(false)
 }

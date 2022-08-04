@@ -1,4 +1,4 @@
-//! Performance collection for rust-lang/rust compilation.
+//! Performance collection for viperproject/prusti-dev compilation.
 //!
 //! This benchmarks a x.py build --stage 0 compiler/rustc invocation on the
 //! latest master compiler.
@@ -25,7 +25,7 @@ pub fn measure(
 ) -> anyhow::Result<()> {
     eprintln!("Running rustc");
 
-    checkout(&artifact).context("checking out rust-lang/rust")?;
+    checkout(&artifact).context("checking out viperproject/prusti-dev")?;
 
     record(rt, conn, compiler, artifact, aid)?;
 
@@ -190,7 +190,7 @@ fn checkout(artifact: &ArtifactId) -> anyhow::Result<()> {
     } else {
         let status = Command::new("git")
             .arg("clone")
-            .arg("https://github.com/rust-lang/rust")
+            .arg("https://github.com/viperproject/prusti-dev")
             .status()
             .context("git clone")?;
         assert!(status.success(), "git clone successful");

@@ -15,7 +15,18 @@ file in the `collector/benchmarks` directory.
 1. Run the script `scripts/setup_aws.sh` to install necessary dependencies
 2. Run the database with the command `scripts/start_db.sh`
 3. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
-4. To run the server, run the command `scripts/run_site.sh` from this directory
+4. Decide on a secret string that will be used to communicate with github webhooks
+5. To run the server, run the command `env GITHUB_WEBHOOK_SECRET=[YOUR SECRET] scripts/run_site.sh` from this directory
+
+### Setting up Github Integration
+
+1. Go to the new webhook page: https://github.com/viperproject/prusti-dev/settings/hooks/new
+2. Create a new webhook with the following settings:
+  1. Under "payload URL" specify http://[SERVER ADDRESS]:2346/perf/github-hook
+  2. Content type should be "applicatin/json"
+  3. Trigger events should be "send me everything"
+  4. Set the secret to the secret you decided above
+3. Create an API token
 
 ## Adding Benchmarks
 
