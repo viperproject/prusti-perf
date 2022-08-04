@@ -18,6 +18,12 @@ file in the `collector/benchmarks` directory.
 4. Decide on a secret string that will be used to communicate with github webhooks
 5. To run the server, run the command `env GITHUB_WEBHOOK_SECRET=[YOUR SECRET] scripts/run_site.sh` from this directory
 
+## Testing a single commit locally
+
+1. In the `prusti-dev` directory, checkout the commit
+2. To ensure you are using the correct version of the viper tools, run `./x.py setup`
+3. From the `prusti-perf` run the command `scripts/run_benchmark.sh`
+
 ### Setting up Github Integration
 
 1. Go to the new webhook page: https://github.com/viperproject/prusti-dev/settings/hooks/new
