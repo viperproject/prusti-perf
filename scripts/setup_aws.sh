@@ -20,6 +20,7 @@ sudo apt-get install -y --no-install-recommends \
       git \
       libc6-dev \
       libssl-dev \
+      jq \
       make \
       mosh \
       pkg-config \
@@ -44,10 +45,6 @@ fi
 cd "$HOME"
 
 git clone https://github.com/viperproject/prusti-dev.git
-
-if ! grep VIPER_HOME ~/.profile > /dev/null; then
-  echo "export VIPER_HOME=$HOME/prusti-dev/viper_tools/backends" >> ~/.profile
-fi
 
 sh <(curl -L https://nixos.org/nix/install) --daemon
 cd ~/prusti-perf/z3nix

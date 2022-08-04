@@ -72,7 +72,7 @@ impl TryCommit {
 
     pub fn comparison_url(&self) -> String {
         format!(
-            "http://34.228.27.164:2346/compare.html?start={}&end={}",
+            "http://3.94.193.1:2346/compare.html?start={}&end={}",
             self.parent_sha, self.sha
         )
     }
@@ -375,6 +375,10 @@ fn sort_queue(
         let level_len = partition_in_place(unordered_queue[finished..].iter_mut(), |(_, mr)| {
             mr.parent_sha().map_or(true, |parent| done.contains(parent))
         });
+        if level_len == 0 {
+            eprintln!("Couldn't chain everything, just break now");
+            return unordered_queue;
+        }
         assert!(
             level_len != 0,
             "at least one commit is ready done={:#?}, {:?}",

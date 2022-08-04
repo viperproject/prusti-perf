@@ -81,7 +81,7 @@ async fn post_comparison_comment(ctxt: &SiteCtxt, commit: QueuedCommit, is_maste
 
 fn make_comparison_url(commit: &QueuedCommit, stat: Metric) -> String {
     format!(
-        "https://perf.rust-lang.org/compare.html?start={}&end={}&stat={}",
+        "http://3.94.193.1:2346/compare.html?start={}&end={}&stat={}",
         commit.parent_sha,
         commit.sha,
         stat.as_str()
@@ -114,7 +114,11 @@ async fn summarize_run(
     let benchmark_map = ctxt.get_benchmark_category_map().await;
 
     let mut message = format!(
-        "Finished benchmarking commit ({sha}): [comparison url]({comparison_url}).\n\n",
+        "Finished benchmarking commit ({sha}): [comparison url]({comparison_url}).\n\n\
+         Benchmark returns the average of 3 consecutive runs of the benchmark suite, \
+         performed after an initial 'warm-up' run. An external Prusti server is maintained \
+         over the 4 runs.
+         ",
         sha = commit.sha,
         comparison_url = make_comparison_url(&commit, Metric::InstructionsUser)
     );
@@ -140,19 +144,19 @@ async fn summarize_run(
     let mut table_written = false;
     let metrics = vec![
         (
-            "Instruction count",
+            "Wall time",
+            Metric::WallTime,
+            false,
+            calculate_metric_comparison(ctxt, &commit, Metric::WallTime).await?,
+        ),
+        (
+            "Instruction count (excludes Viper)",
             Metric::InstructionsUser,
             false,
             inst_comparison,
         ),
         (
-            "Max RSS (memory usage)",
-            Metric::MaxRSS,
-            true,
-            calculate_metric_comparison(ctxt, &commit, Metric::MaxRSS).await?,
-        ),
-        (
-            "Cycles",
+            "Cycles (excludes Viper)",
             Metric::CyclesUser,
             true,
             calculate_metric_comparison(ctxt, &commit, Metric::CyclesUser).await?,
@@ -266,28 +270,11 @@ cc @rust-lang/wg-compiler-performance
 }
 
 fn try_run_body(label: &str) -> String {
-    let next_steps = if label.starts_with("+") {
-        "\n\n**Next Steps**: If you can justify the regressions found in \
-            this try perf run, please indicate this with \
-            `@rustbot label: +perf-regression-triaged` along with \
-            sufficient written justification. If you cannot justify the regressions \
-            please fix the regressions and do another perf run. If the next run \
-            shows neutral or positive results, the label will be automatically removed."
+    if label.starts_with("+") {
+        "\n\n**Next Steps**: There may have been some performance regressions. Please check.".to_string()
     } else {
-        ""
-    };
-
-    format!(
-        "
-Benchmarking this pull request likely means that it is \
-perf-sensitive, so we're automatically marking it as not fit \
-for rolling up. While you can manually mark this PR as fit \
-for rollup, we strongly recommend not doing so since this PR may lead to changes in \
-compiler perf.{next_steps}
-
-@bors rollup=never
-@rustbot label: +S-waiting-on-review -S-waiting-on-perf {label}",
-    )
+        "".to_string()
+    }
 }
 
 fn generate_short_summary(summary: &ArtifactComparisonSummary) -> String {

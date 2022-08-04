@@ -4,3 +4,8 @@ PRUSTI_DIR=$(readlink -f ../prusti-dev)
 COLLECTOR=$PERF_DIR/target/debug/collector
 RUSTC=$PRUSTI_DIR/target/release/prusti-rustc
 CARGO=$(which cargo)
+if test -f "$PRUSTI_DIR/viper_tools/server/viperserver.jar"; then
+   export VIPER_HOME=$PRUSTI_DIR/viper_tools/server
+else
+   export VIPER_HOME=$PRUSTI_DIR/viper_tools/backends
+fi

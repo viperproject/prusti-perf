@@ -255,6 +255,15 @@ pub struct MasterCommit {
     pub time: chrono::DateTime<chrono::Utc>,
 }
 
+fn extract_pr_number(commit_msg: &str) -> Option<u32> {
+    commit_msg
+        .strip_prefix("Merge #")?
+        .split_whitespace()
+        .next()?
+        .parse()
+        .ok()
+}
+
 pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
     let git_log = Command::new("git")
         .stdout(Stdio::piped())
@@ -263,7 +272,7 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
         .arg("log")
         .arg("origin/master")
         .arg("--author=bors")
-        .arg("--pretty=format:%H,%aI")
+        .arg("--pretty=format:%H,%aI,%s")
         .output()
         .unwrap();
 
@@ -278,11 +287,13 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
         let mut cur_chunks = cur_line.split(",");
         let sha = cur_chunks.next().unwrap();
         let time = cur_chunks.next().unwrap();
-        let parent_sha = parent.split(":").next().unwrap();
+        let commit_msg = cur_chunks.next().unwrap();
+
+        let parent_sha = parent.split(",").next().unwrap();
         result.push(MasterCommit {
             sha: sha.to_string(),
             parent_sha: parent_sha.to_string(),
-            pr: None,
+            pr: extract_pr_number(commit_msg),
             time: DateTime::parse_from_rfc3339(time).unwrap().with_timezone(&Utc)
         });
         cur_line = parent;

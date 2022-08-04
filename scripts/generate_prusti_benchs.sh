@@ -21,7 +21,15 @@ LAST_VIPER_TOOLCHAIN=""
 
 cd "$PRUSTI_DIR"
 git fetch
-git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while read -r SHA; do
+# git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while read -r SHA; do
+while true; do
+    SHA=$(curl 'http://3.94.193.1:2346/perf/next_commit' | jq -r .commit.sha)
+    if [ "$SHA" == "null" ]; then
+        echo "No more commits, will check again in 60 seconds"
+        sleep 60
+        continue
+    fi
+    echo "Will run benchmarks for $SHA"
     git checkout "$SHA"
     VIPER_TOOLCHAIN=$(<viper-toolchain)
     if [ "$LAST_VIPER_TOOLCHAIN" != "$VIPER_TOOLCHAIN" ]; then
