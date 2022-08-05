@@ -39,6 +39,19 @@ while true; do
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
     cd "$PERF_DIR"
+    set +e
     scripts/run_benchmark.sh
+    if [ $? -ne 0 ]; then
+        echo "Failure for SHA $SHA"
+        PR=$(env PGPASSWORD=prusti psql -U prusti -h localhost -A -t -c \
+            "SELECT pr FROM pull_request_build WHERE bors_sha = '$SHA' AND NOT complete")
+        if [ ! -z "$PR" ]; then
+            echo "PR was $PR"
+            echo "The perf build for $SHA failed! You may want to retry" | scripts/post_github_comment.sh "$PR"
+            env PGPASSWORD=prusti psql -U prusti -h localhost -c \
+                "DELETE FROM pull_request_build WHERE pr=$PR"
+        fi
+    fi
+    set -e
     cd "$PRUSTI_DIR"
 done
