@@ -35,6 +35,7 @@ while true; do
     if [ "$LAST_VIPER_TOOLCHAIN" != "$VIPER_TOOLCHAIN" ]; then
         echo "Using new viper toolchain $VIPER_TOOLCHAIN"
         ./x.py setup
+        ./x.py clean
         LAST_VIPER_TOOLCHAIN="$VIPER_TOOLCHAIN"
     fi
     cd "$PERF_DIR"
