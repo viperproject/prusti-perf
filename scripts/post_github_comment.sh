@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-OWNER=zgrannan
+OWNER=viperproject
 
 source vars
 BODY=$(</dev/stdin)

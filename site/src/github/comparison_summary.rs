@@ -68,7 +68,7 @@ pub async fn post_finished(ctxt: &SiteCtxt) {
 async fn post_comparison_comment(ctxt: &SiteCtxt, commit: QueuedCommit, is_master_commit: bool) {
     let client = super::client::Client::from_ctxt(
         ctxt,
-        "https://api.github.com/repos/zgrannan/prusti-dev".to_owned(),
+        "https://api.github.com/repos/viperproject/prusti-dev".to_owned(),
     );
     let pr = commit.pr;
     let body = match summarize_run(ctxt, commit, is_master_commit).await {

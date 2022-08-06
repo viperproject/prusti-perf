@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+GIT_FETCH_INTERVAL_SECONDS=3600
+
 if [ "$#" -gt 1 ]; then
     echo "Usage: scripts/generate_prusti_benchs.sh [FROM_COMMIT]"
     exit
@@ -21,8 +23,15 @@ LAST_VIPER_TOOLCHAIN=""
 
 cd "$PRUSTI_DIR"
 git fetch
+LAST_GIT_FETCH_TIME=$(date +%s)
 # git --no-pager log "$INITIAL_COMMIT" --author=bors --pretty=format:%H | while read -r SHA; do
 while true; do
+    CURRENT_TIME=$(date +%s)
+    SHOULD_FETCH=$(($CURRENT_TIME - $LAST_GIT_FETCH_TIME > $GIT_FETCH_INTERVAL_SECONDS))
+    if [ "$SHOULD_FETCH" == "1" ]; then
+        git fetch
+        LAST_GIT_FETCH_TIME=$(date +%s)
+    fi
     SHA=$(curl 'http://3.94.193.1:2346/perf/next_commit' | jq -r .commit.sha)
     if [ "$SHA" == "null" ]; then
         echo "No more commits, will check again in 60 seconds"

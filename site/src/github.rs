@@ -25,7 +25,7 @@ pub async fn unroll_rollup(
             use std::fmt::Write;
             write!(
                 &mut string,
-                "|#{pr}|[{commit}](https://github.com/zgrannan/prusti-dev/commit/{commit})|\n",
+                "|#{pr}|[{commit}](https://github.com/viperproject/prusti-dev/commit/{commit})|\n",
                 pr = c.original_pr_number,
                 commit = c.sha
             )
@@ -253,14 +253,14 @@ struct PullRequestResponse {
 
 /// Fetch all merged PRs that are labeled with `perf-regression` and not `perf-regression-triaged`
 pub(crate) async fn untriaged_perf_regressions() -> Result<Vec<PullRequest>, BoxedError> {
-    let url = "https://api.github.com/search/issues?q=repo:zgrannan/prusti-dev+label:perf-regression+-label:perf-regression-triaged+is:merged".to_owned();
+    let url = "https://api.github.com/search/issues?q=repo:viperproject/prusti-dev+label:perf-regression+-label:perf-regression-triaged+is:merged".to_owned();
     let request = github_request(&url);
     Ok(send_request::<PullRequestResponse>(request).await?.items)
 }
 
 /// Get the title of a PR with the given number
 pub(crate) async fn pr_title(pr: u32) -> String {
-    let url = format!("https://api.github.com/repos/zgrannan/prusti-dev/pulls/{}", pr);
+    let url = format!("https://api.github.com/repos/viperproject/prusti-dev/pulls/{}", pr);
     let request = github_request(&url);
 
     async fn send(request: reqwest::RequestBuilder) -> Result<String, BoxedError> {
