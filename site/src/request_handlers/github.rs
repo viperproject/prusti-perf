@@ -108,7 +108,7 @@ async fn handle_rust_timer(
     issue: github::Issue,
 ) -> ServerResult<github::Response> {
     if comment.author_association != github::Association::Owner
-        && !get_authorized_users().await?.contains(&comment.user.id)
+        && comment.author_association != github::Association::Collaborator
     {
         main_client
             .post_comment(

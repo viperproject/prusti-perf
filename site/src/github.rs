@@ -197,7 +197,7 @@ pub async fn enqueue_shas(
                 msg.push('\n');
             }
             msg.push_str(&format!(
-                "Queued {} with parent {}, future [comparison URL]({}).",
+                "Queued {} with parent {}, future [comparison URL]({}). Results should be pushed in about an hour or so. If not, send me a message.",
                 try_commit.sha,
                 try_commit.parent_sha,
                 try_commit.comparison_url(),
