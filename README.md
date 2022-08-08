@@ -2,7 +2,7 @@
 
 This repository contains two primary crates: 
 * [`collector`](./collector): gathers data for each bors commit
-* [`site`](./site): [displays](http://34.228.27.164:2346) the data and provides a GitHub bot for on-demand benchmarking
+* [`site`](./site): [displays](http://3.94.193.1:2346) the data and provides a GitHub bot for on-demand benchmarking
 
 Additional documentation on running and setting up the frontend and backend can
 be found in the `README` files in the `collector` and `site` directories.
@@ -10,13 +10,39 @@ be found in the `README` files in the `collector` and `site` directories.
 Additional documentation on the benchmark programs can be found in the `README`
 file in the `collector/benchmarks` directory.
 
-## Quick Start
+## Getting Started
+
+### Hosting
+
+TLDR: Should work out-of-the box using Ubuntu 22.04 LTS on AWS A1 instances
+(both virtualized and non-virtualized). Using a bare-metal or dedicated A1
+instance should give the best results.
+
+Benchmarks are collected using the `perf` tool (although in principle other tools
+are supported). `perf` collects various metrics; for some, hardware performance
+monitors are required. These monitors are often not available on VPS, however
+they __are__ available on virtualized Amazon ARM instances. Nonetheless, the
+"wall-time" measurements do not require these monitors.
+
+Typically, using the "instructions" metric from `perf` would yield the most
+consistent results; compared to wall-time that would be impacted by other
+processes, hardware changes etc. However, JVM caching / warm-up things are
+highly variable across runs in terms of instruction counts. To address this, the
+benchmarks are first run through once to warm up the Viper server, so that
+subsequent runs have a hot cache (and can be benchmarked). However as it doesn't
+seem trivial to capture the viper server instructions after the warmup in perf,
+the "instructions" metric only counts those from Prusti. Thus, they do will not
+capture some meaningful results (i.e. changes that make the viper encoding more
+efficient). For this reason, wall-time measurements are used instead as the default.
+
+### Instructions
 
 1. Run the script `scripts/setup_aws.sh` to install necessary dependencies
 2. Run the database with the command `scripts/start_db.sh`
-3. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
-4. Decide on a secret string that will be used to communicate with github webhooks
-5. To run the server, run the command `env GITHUB_WEBHOOK_SECRET=[YOUR SECRET] scripts/run_site.sh` from this directory
+3. Decide on a secret string that will be used to communicate with github webhooks
+4. To run the server, run the command `env GITHUB_WEBHOOK_SECRET=[YOUR SECRET] scripts/run_site.sh` from this directory
+5. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
+6. Checkout the "Setting up Github Integration" section
 
 ## Testing a single commit locally
 
@@ -24,12 +50,12 @@ file in the `collector/benchmarks` directory.
 2. To ensure you are using the correct version of the viper tools, run `./x.py setup`
 3. From the `prusti-perf` run the command `scripts/run_benchmark.sh`
 
-### Setting up Github Integration
+## Setting up Github Integration
 
 1. Go to the new webhook page: https://github.com/viperproject/prusti-dev/settings/hooks/new
 2. Create a new webhook with the following settings:
   1. Under "payload URL" specify http://[SERVER ADDRESS]:2346/perf/github-hook
-  2. Content type should be "applicatin/json"
+  2. Content type should be "application/json"
   3. Trigger events should be "send me everything"
   4. Set the secret to the secret you decided above
 3. Create an API token
