@@ -120,7 +120,7 @@ async fn summarize_run(
          over the 4 runs.
          ",
         sha = commit.sha,
-        comparison_url = make_comparison_url(&commit, Metric::InstructionsUser)
+        comparison_url = make_comparison_url(&commit, Metric::WallTime)
     );
 
     let inst_comparison =
