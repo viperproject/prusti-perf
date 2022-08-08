@@ -162,49 +162,38 @@ pub async fn rollup_pr_number(
         .then(|| issue.number))
 }
 
-pub async fn enqueue_shas(
+pub async fn enqueue_sha(
     ctxt: &SiteCtxt,
-    main_client: &client::Client,
-    ci_client: &client::Client,
+    github_client: &client::Client,
     pr_number: u32,
-    commits: impl Iterator<Item = &str>,
+    commit_sha: String
 ) -> Result<(), String> {
     let mut msg = String::new();
-    for commit in commits {
-        let mut commit_response = ci_client
-            .get_commit(&commit)
+    let master_commit = github_client
+        .get_commit("master")
+        .await
+        .map_err(|e| e.to_string())?;
+    let try_commit = TryCommit {
+        sha: commit_sha,
+        parent_sha: master_commit.sha
+    };
+    let queued = {
+        let conn = ctxt.conn().await;
+        conn.pr_attach_commit(pr_number, &try_commit.sha, &try_commit.parent_sha)
             .await
-            .map_err(|e| e.to_string())?;
-        if commit_response.parents.len() != 2 {
-            log::error!(
-                "Bors try commit {} unexpectedly has {} parents.",
-                commit_response.sha,
-                commit_response.parents.len()
-            );
-            return Ok(());
+    };
+    if queued {
+        if !msg.is_empty() {
+            msg.push('\n');
         }
-        let try_commit = TryCommit {
-            sha: commit_response.sha,
-            parent_sha: commit_response.parents.remove(0).sha,
-        };
-        let queued = {
-            let conn = ctxt.conn().await;
-            conn.pr_attach_commit(pr_number, &try_commit.sha, &try_commit.parent_sha)
-                .await
-        };
-        if queued {
-            if !msg.is_empty() {
-                msg.push('\n');
-            }
-            msg.push_str(&format!(
-                "Queued {} with parent {}, future [comparison URL]({}). Results should be pushed in about an hour or so. If not, send me a message.",
-                try_commit.sha,
-                try_commit.parent_sha,
-                try_commit.comparison_url(),
-            ));
-        }
+        msg.push_str(&format!(
+            "Queued {} with parent {}, future [comparison URL]({}). Results should be pushed in about an hour or so. If not, send me a message.",
+            try_commit.sha,
+            try_commit.parent_sha,
+            try_commit.comparison_url(),
+        ));
     }
-    main_client.post_comment(pr_number, msg).await;
+    github_client.post_comment(pr_number, msg).await;
     Ok(())
 }
 

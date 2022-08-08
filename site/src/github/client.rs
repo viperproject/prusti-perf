@@ -1,7 +1,7 @@
 use anyhow::Context;
 use http::header::USER_AGENT;
 
-use crate::{api::github::Issue, load::SiteCtxt};
+use crate::{api::github::{Pull, Issue}, load::SiteCtxt};
 
 /// A client for interacting with the GitHub API
 pub struct Client {
@@ -161,6 +161,17 @@ impl Client {
             .await
             .context("deserializing failed")?
             .sha)
+    }
+
+    pub async fn get_pull(&self, number: u64) -> anyhow::Result<Pull> {
+        let url = format!("{}/issues/{}", self.repository_url, number);
+        let req = self.inner.get(&url);
+        let response = self.send(req).await.context("cannot get pull")?;
+        if !response.status().is_success() {
+            anyhow::bail!("{:?} != 200 OK", response.status());
+        }
+
+        Ok(response.json().await?)
     }
 
     pub async fn get_issue(&self, number: u64) -> anyhow::Result<Issue> {

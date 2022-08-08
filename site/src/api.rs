@@ -390,6 +390,16 @@ pub mod github {
     }
 
     #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+    pub struct PullHead {
+        pub sha: String
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+    pub struct Pull {
+        pub head: PullHead
+    }
+
+    #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
     pub struct Issue {
         pub number: u32,
         pub comments_url: String,

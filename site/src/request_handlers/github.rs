@@ -1,5 +1,5 @@
 use crate::api::{github, ServerResult};
-use crate::github::{client, enqueue_shas, parse_homu_comment, rollup_pr_number, unroll_rollup};
+use crate::github::{client, enqueue_sha, rollup_pr_number, unroll_rollup};
 use crate::load::SiteCtxt;
 
 use std::sync::Arc;
@@ -71,30 +71,30 @@ async fn handle_issue(
     issue: github::Issue,
     comment: github::Comment,
 ) -> ServerResult<github::Response> {
-    let main_client = client::Client::from_ctxt(
+    let github_client = client::Client::from_ctxt(
         &ctxt,
         "https://api.github.com/repos/viperproject/prusti-dev".to_owned(),
     );
-    let ci_client = client::Client::from_ctxt(
-        &ctxt,
-        "https://api.github.com/repos/viperproject/prusti-dev".to_owned(),
-    );
-    if comment.body.contains(" homu: ") {
-        if let Some(sha) = parse_homu_comment(&comment.body).await {
-            enqueue_shas(
-                &ctxt,
-                &main_client,
-                &ci_client,
-                issue.number,
-                std::iter::once(sha.as_str()),
-            )
-            .await?;
-            return Ok(github::Response);
-        }
-    }
+    // let ci_client = client::Client::from_ctxt(
+    //     &ctxt,
+    //     "https://api.github.com/repos/viperproject/prusti-dev".to_owned(),
+    // );
+    // if comment.body.contains(" homu: ") {
+    //     if let Some(sha) = parse_homu_comment(&comment.body).await {
+    //         enqueue_shas(
+    //             &ctxt,
+    //             &main_client,
+    //             &ci_client,
+    //             issue.number,
+    //             std::iter::once(sha.as_str()),
+    //         )
+    //         .await?;
+    //         return Ok(github::Response);
+    //     }
+    // }
 
-    if comment.body.contains("@rust-timer ") {
-        return handle_rust_timer(ctxt, &main_client, &ci_client, comment, issue).await;
+    if comment.body.contains("@prusti-timer") {
+        return handle_rust_timer(ctxt, &github_client, comment, issue).await;
     }
 
     Ok(github::Response)
@@ -103,7 +103,6 @@ async fn handle_issue(
 async fn handle_rust_timer(
     ctxt: Arc<SiteCtxt>,
     main_client: &client::Client,
-    ci_client: &client::Client,
     comment: github::Comment,
     issue: github::Issue,
 ) -> ServerResult<github::Response> {
@@ -119,41 +118,56 @@ async fn handle_rust_timer(
         return Ok(github::Response);
     }
 
-    if let Some(captures) = BODY_TIMER_QUEUE.captures(&comment.body) {
-        let include = captures.get(1).map(|v| v.as_str());
-        let exclude = captures.get(2).map(|v| v.as_str());
-        let runs = captures.get(3).and_then(|v| v.as_str().parse::<i32>().ok());
-        {
-            let conn = ctxt.conn().await;
-            conn.queue_pr(issue.number, include, exclude, runs).await;
+    let sha = match main_client.get_pull(issue.number.into()).await {
+        Ok(pull) => pull.head.sha,
+        Err(err) => {
+            main_client
+                .post_comment(
+                    issue.number,
+                    format!(
+                        "Unexpected error: Could not fetch SHA for this PR. The error was: {}",
+                        err
+                    )
+                )
+                .await;
+            return Ok(github::Response);
         }
-        main_client
-            .post_comment(
-                issue.number,
-                "Awaiting bors try build completion.
+    };
 
-@rustbot label: +S-waiting-on-perf",
-            )
-            .await;
-        return Ok(github::Response);
-    }
+//     if let Some(captures) = BODY_TIMER_QUEUE.captures(&comment.body) {
+//         let include = captures.get(1).map(|v| v.as_str());
+//         let exclude = captures.get(2).map(|v| v.as_str());
+//         let runs = captures.get(3).and_then(|v| v.as_str().parse::<i32>().ok());
+//         {
+//             let conn = ctxt.conn().await;
+//             conn.queue_pr(issue.number, include, exclude, runs).await;
+//         }
+//         main_client
+//             .post_comment(
+//                 issue.number,
+//                 "Awaiting bors try build completion.
 
-    for captures in build_captures(&comment).map(|(_, captures)| captures) {
-        let include = captures.get(2).map(|v| v.as_str());
-        let exclude = captures.get(3).map(|v| v.as_str());
-        let runs = captures.get(4).and_then(|v| v.as_str().parse::<i32>().ok());
-        {
-            let conn = ctxt.conn().await;
-            conn.queue_pr(issue.number, include, exclude, runs).await;
-        }
-    }
+// @rustbot label: +S-waiting-on-perf",
+//             )
+//             .await;
+//         return Ok(github::Response);
+//     }
 
-    enqueue_shas(
+//     for captures in build_captures(&comment).map(|(_, captures)| captures) {
+//         let include = captures.get(2).map(|v| v.as_str());
+//         let exclude = captures.get(3).map(|v| v.as_str());
+//         let runs = captures.get(4).and_then(|v| v.as_str().parse::<i32>().ok());
+//         {
+//             let conn = ctxt.conn().await;
+//             conn.queue_pr(issue.number, include, exclude, runs).await;
+//         }
+//     }
+
+    enqueue_sha(
         &ctxt,
         &main_client,
-        &ci_client,
         issue.number,
-        build_captures(&comment).map(|(commit, _)| commit),
+        sha
     )
     .await?;
 
