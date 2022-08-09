@@ -2,7 +2,11 @@
 
 function subst() {
     find site -type f -name "*.rs" | while read -r SRC_FILE; do
-        sed -i "" "$1" "$SRC_FILE"
+        if [ "$(uname)" == "Darwin" ]; then
+            sed -i "" "$1" "$SRC_FILE"
+        else
+            sed -i "$1" "$SRC_FILE"
+        fi
     done
 }
 subst "s/rust-lang\/rustc-perf/prusti-dev\/prusti-perf/g"

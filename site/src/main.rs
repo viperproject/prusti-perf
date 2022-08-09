@@ -32,10 +32,10 @@ async fn main() {
             *ctxt_.write() = Some(res.clone());
             let commits = res.index.load().commits().len();
             let artifacts = res.index.load().artifacts().count();
-            if commits + artifacts == 0 {
-                eprintln!("Loading complete but no data identified; exiting.");
-                std::process::exit(1);
-            }
+            // if commits + artifacts == 0 {
+            //     eprintln!("Loading complete but no data identified; exiting.");
+            //     std::process::exit(1);
+            // }
             eprintln!(
                 "Loading complete; {} commits and {} artifacts",
                 commits, artifacts,

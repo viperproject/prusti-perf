@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+HOST=http://localhost:2346
 GIT_FETCH_INTERVAL_SECONDS=3600
 
 if [ "$#" -gt 1 ]; then
@@ -32,7 +33,7 @@ while true; do
         git fetch
         LAST_GIT_FETCH_TIME=$(date +%s)
     fi
-    SHA=$(curl 'http://3.94.193.1:2346/perf/next_commit' | jq -r .commit.sha)
+    SHA=$(curl "$HOST/perf/next_commit" | jq -r .commit.sha)
     if [ "$SHA" == "null" ]; then
         echo "No more commits, will check again in 60 seconds"
         sleep 60

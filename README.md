@@ -37,28 +37,57 @@ efficient). For this reason, wall-time measurements are used instead as the defa
 
 ### Instructions
 
-1. Run the script `scripts/setup_aws.sh` to install necessary dependencies
-2. Run the database with the command `scripts/start_db.sh`
-3. Decide on a secret string that will be used to communicate with github webhooks
-4. To run the server, run the command `env GITHUB_WEBHOOK_SECRET=[YOUR SECRET] scripts/run_site.sh` from this directory
-5. Run the script `scripts/generate_prusti_benchs.sh` to benchmark all BORS commits from Prusti
-6. Checkout the "Setting up Github Integration" section
+#### 1. Run the script `scripts/setup_aws.sh` to install necessary dependencies
+#### 2. Run the database with the command `scripts/start_db.sh`
+#### 3. Setup Github Webhook
+  0. Decide on a secret string for webhooks
+  1. Go to the new webhook page: https://github.com/viperproject/prusti-dev/settings/hooks/new
+  2. Create a new webhook with the following settings:
+    1. Under "payload URL" specify http://[SERVER ADDRESS]:2346/perf/github-hook
+    2. Content type should be "application/json"
+    3. Trigger events should be "Issue Comments" and "Pushes"
+    4. Set the secret to the secret you decided above
+#### 4. Create a GitHub API token
+  Instructions here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+
+#### 5. Run the site and collector scripts
+
+  These two scripts will run persistently. A nice way to do this is to run them
+  in seperate `tmux` panes (I think `screen` should work too?)
+  
+  For the server, you will need to export the Github Webhook Secret and API
+  token. One way to do this is to create a file called `.env` that looks like:
+
+``` sh
+export GITHUB_WEBHOOK_SECRET=[The secret]
+export GITHUB_API_TOKEN=[The secret]
+```
+
+  Then the "site" can be run with the following two commands
+
+``` sh
+source .env
+scripts/run_site.sh
+```
+
+  The collector can be run with the command:
+
+``` sh
+scripts/run_collector.sh
+```
 
 ## Testing a single commit locally
 
-1. In the `prusti-dev` directory, checkout the commit
+If you just want to test locally, complete the steps in the "Getting Started"
+section, with two changes:
+1. It's not necessary to setup any of the Github stuff
+2. Do __not__ run the collector script
+
+Then:
+
+1. In the `prusti-dev` directory, checkout the commit you wish to benchmark
 2. To ensure you are using the correct version of the viper tools, run `./x.py setup`
 3. From the `prusti-perf` run the command `scripts/run_benchmark.sh`
-
-## Setting up Github Integration
-
-1. Go to the new webhook page: https://github.com/viperproject/prusti-dev/settings/hooks/new
-2. Create a new webhook with the following settings:
-  1. Under "payload URL" specify http://[SERVER ADDRESS]:2346/perf/github-hook
-  2. Content type should be "application/json"
-  3. Trigger events should be "send me everything"
-  4. Set the secret to the secret you decided above
-3. Create an API token
 
 ## Adding Benchmarks
 
@@ -76,9 +105,7 @@ Excluding Viper parts from perf (by running in server) yields ~0.02% difference 
 
 ## TODO
 
-- [ ] Use Viperserver for more consistent results
-- [ ] Remove first iteration of each run from statistics
-- [ ] Github Integration
+- [ ] Support for entire Prusti test suite
 - [ ] Warnings for performance regressions
 - [ ] Support comparison of different variants of Prusti (i.e., using different configuration parameters)
 - [ ] Also include less interesting tests
