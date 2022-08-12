@@ -1,11 +1,25 @@
 #!/usr/bin/env bash
 
+function apply_subst_to_file {
+    if [ "$(uname)" == "Darwin" ]; then
+        sed -i "" "$1" "$2"
+    else
+        sed -i "$1" "$2"
+    fi
+}
+
 function subst() {
     find site -type f -name "*.rs" | while read -r SRC_FILE; do
-        if [ "$(uname)" == "Darwin" ]; then
-            sed -i "" "$1" "$SRC_FILE"
-        else
-            sed -i "$1" "$SRC_FILE"
+        apply_subst_to_file "$1" "$SRC_FILE"
+    done
+
+    find collector -type f -name "*.rs" | while read -r SRC_FILE; do
+        apply_subst_to_file "$1" "$SRC_FILE"
+    done
+
+    find scripts -type f -name "*.sh" | while read -r SRC_FILE; do
+        if [ "$SRC_FILE" != "scripts/prustify.sh" ]; then
+            apply_subst_to_file "$1" "$SRC_FILE"
         fi
     done
 }

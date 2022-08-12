@@ -281,7 +281,10 @@ pub async fn master_commits() -> anyhow::Result<Vec<MasterCommit>> {
 
     let mut result: Vec<MasterCommit> = Vec::new();
 
-    let mut cur_line = output_lines.next().unwrap();
+    let mut cur_line = output_lines.next().unwrap_or_else(|| {
+        let err_output = std::str::from_utf8(&git_log.stderr).unwrap();
+        panic!("Couldn't get output line, git error output was:\n {}", err_output);
+    });
 
     while let Some(parent) = output_lines.next() {
         let mut cur_chunks = cur_line.split(",");

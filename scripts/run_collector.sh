@@ -1,22 +1,36 @@
 #!/usr/bin/env bash
-# Iterates over all BORS commits and performs a benchmark for each one
-# Assumes that the `collector` executable is already built
+
+if ! command -v psql &> /dev/null; then
+    echo 'Executable `psql` could not be found'
+    echo "You may be able to install it with the command 'sudo apt install postgresql-client-common postgresql-client'"
+    exit 1
+fi
+
+if ! command -v lsof &> /dev/null; then
+    echo 'Executable `lsof` could not be found'
+    echo "You may be able to install it with the command 'sudo apt install lsof'"
+    exit 1
+fi
 
 set -euo pipefail
+
+cd collector
+cargo build
+cd ..
 
 HOST=http://localhost:2346
 GIT_FETCH_INTERVAL_SECONDS=3600
 
-if [ "$#" -gt 1 ]; then
-    echo "Usage: scripts/generate_prusti_benchs.sh [FROM_COMMIT]"
-    exit
-fi
+# if [ "$#" -gt 1 ]; then
+#     echo "Usage: scripts/generate_prusti_benchs.sh [FROM_COMMIT]"
+#     exit
+# fi
 
-if [ "$#" -eq 1 ]; then
-    INITIAL_COMMIT="$1"
-else
-    INITIAL_COMMIT="origin/master"
-fi
+# if [ "$#" -eq 1 ]; then
+#     INITIAL_COMMIT="$1"
+# else
+#     INITIAL_COMMIT="origin/master"
+# fi
 
 source scripts/vars
 
@@ -51,7 +65,13 @@ while true; do
     cd "$PERF_DIR"
     set +e
     scripts/run_benchmark.sh
-    if [ $? -ne 0 ]; then
+    BENCH_RESULT=$?
+
+    if [ $BENCH_RESULT -eq 3 ]; then
+        echo "Unexpected error running benchmarks, aborting"
+        exit 1
+    fi
+    if [ $BENCH_RESULT -ne 0 ]; then
         echo "Failure for SHA $SHA"
         PR=$(env PGPASSWORD=prusti psql -U prusti -h localhost -A -t -c \
             "SELECT pr FROM pull_request_build WHERE bors_sha = '$SHA' AND NOT complete")

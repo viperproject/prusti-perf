@@ -177,22 +177,28 @@ pub async fn enqueue_sha(
         sha: commit_sha,
         parent_sha: master_commit.sha
     };
-    let queued = {
-        let conn = ctxt.conn().await;
+    eprintln!("Enqueue try commit {:?}", try_commit);
+    let conn = ctxt.conn().await;
+    let updated =
         conn.pr_attach_commit(pr_number, &try_commit.sha, &try_commit.parent_sha)
-            .await
-    };
-    if queued {
-        if !msg.is_empty() {
-            msg.push('\n');
-        }
-        msg.push_str(&format!(
-            "Queued {} with parent {}, future [comparison URL]({}). Results should be pushed in about an hour or so. If not, send me a message.",
-            try_commit.sha,
-            try_commit.parent_sha,
-            try_commit.comparison_url(),
-        ));
+            .await;
+    if !updated {
+        eprintln!("PR not already queued, creating...");
+        conn.queue_pr(pr_number, None, None, None).await;
+        conn.pr_attach_commit(pr_number, &try_commit.sha, &try_commit.parent_sha)
+            .await;
+    } else {
+        eprintln!("PR updated");
     }
+    if !msg.is_empty() {
+        msg.push('\n');
+    }
+    msg.push_str(&format!(
+        "Queued {} with parent {}, future [comparison URL]({}). Results should be pushed in about an hour or so. If not, send me a message.",
+        try_commit.sha,
+        try_commit.parent_sha,
+        try_commit.comparison_url(),
+    ));
     github_client.post_comment(pr_number, msg).await;
     Ok(())
 }

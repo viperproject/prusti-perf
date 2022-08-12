@@ -164,7 +164,8 @@ impl Client {
     }
 
     pub async fn get_pull(&self, number: u64) -> anyhow::Result<Pull> {
-        let url = format!("{}/issues/{}", self.repository_url, number);
+        let url = format!("{}/pulls/{}", self.repository_url, number);
+        eprintln!("Fetching pull at URL: {}", url);
         let req = self.inner.get(&url);
         let response = self.send(req).await.context("cannot get pull")?;
         if !response.status().is_success() {

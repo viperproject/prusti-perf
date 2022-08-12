@@ -624,8 +624,8 @@ where
     async fn pr_attach_commit(&self, pr: u32, sha: &str, parent_sha: &str) -> bool {
         self.conn()
             .execute(
-                "update pull_request_build SET bors_sha = $1, parent_sha = $2
-                where pr = $3 and bors_sha is null",
+                "update pull_request_build SET bors_sha = $1, parent_sha = $2, complete = false
+                where pr = $3",
                 &[&sha, &parent_sha, &(pr as i32)],
             )
             .await

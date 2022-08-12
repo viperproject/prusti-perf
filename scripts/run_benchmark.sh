@@ -15,6 +15,10 @@ SHA=$(git rev-parse HEAD)
 
 export LD_LIBRARY_PATH=/usr/lib/jvm/default-java/lib/server
 export Z3_EXE=$HOME/prusti-perf/z3nix/result/bin/z3
+if [ ! -f "$Z3_EXE" ]; then
+  echo "Z3 executable at $Z3_EXE is not executable. You may need to build it"
+  exit 3
+fi
 export PRUSTI_ENABLE_CACHE=false
 export PRUSTI_CHECK_OVERFLOWS=false 
 # export PRUSTI_EXTRA_VERIFIER_ARGS="--proverEnableResourceBounds"
@@ -24,7 +28,7 @@ if [ "$USE_SERVER" == "true" ];  then
   PRUSTI_SERVER_PORT=12345
   if lsof -Pi ":$PRUSTI_SERVER_PORT" -sTCP:LISTEN -t >/dev/null ; then
      echo "Prusti server already running, but it shouldn't be!"
-     exit 1
+     exit 3
   fi
   export PRUSTI_SERVER_ADDRESS="localhost:$PRUSTI_SERVER_PORT"
   $PRUSTI_SERVER --port "$PRUSTI_SERVER_PORT"&
