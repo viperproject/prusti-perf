@@ -1412,6 +1412,26 @@ impl Benchmark {
                 let timing_dir = ManuallyDrop::new(self.make_temp_dir(prep_dir.path())?);
                 let cwd = timing_dir.path();
 
+                if self.name == BenchmarkName("full-test-suite".to_string()) {
+                    let perf_tool_name = processor.perf_tool(profile).name();
+                    let mut cmd = Command::new(perf_tool_name);
+                    cmd.arg("./x.py test");
+                    let output = command_output(&mut cmd)?;
+                    let data = ProcessOutputData {
+                        name: self.name.clone(),
+                        cwd,
+                        profile,
+                        scenario: Scenario::Full,
+                        scenario_str: "Full",
+                        patch: None,
+                    };
+                    match processor.process_output(&data, output) {
+                        Ok(Retry::No) => return Ok(()),
+                        Ok(Retry::Yes) => panic!(),
+                        Err(e) => return Err(e),
+                    }
+                }
+
                 // A full non-incremental build.
                 if scenarios.contains(&Scenario::Full) {
                     self.mk_cargo_process(compiler, cwd, profile)
