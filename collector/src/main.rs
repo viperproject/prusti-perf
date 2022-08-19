@@ -397,6 +397,12 @@ fn get_benchmarks(
     check_for_unused("include", includes)?;
     check_for_unused("exclude", excludes)?;
 
+    benchmarks.push(
+        Benchmark::new(
+            "full-test-suite".to_string(),
+            PathBuf::from("../prusti-dev")
+        )?
+    );
     benchmarks.sort_by_key(|benchmark| benchmark.name.clone());
 
     if benchmarks.is_empty() {
