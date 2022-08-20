@@ -79,9 +79,10 @@ scripts/run_collector.sh
 ## Testing a single commit locally
 
 If you just want to test locally, complete the steps in the "Getting Started"
-section, with two changes:
+section, with a few changes:
 1. It's not necessary to setup any of the Github stuff
 2. Do __not__ run the collector script
+3. You should run `cargo build` from the `collector` directory
 
 Then:
 

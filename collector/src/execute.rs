@@ -1413,9 +1413,24 @@ impl Benchmark {
                 let cwd = timing_dir.path();
 
                 if self.name == BenchmarkName("full-test-suite".to_string()) {
-                    let perf_tool_name = processor.perf_tool(profile).name();
-                    let mut cmd = Command::new(perf_tool_name);
-                    cmd.arg("./x.py test");
+                    let mut cmd = Command::new("perf");
+                    cmd.current_dir("../prusti-dev")
+                        .arg("stat")
+                        .arg("-r")
+                        .arg(env::var("BENCH_PERF_ITERATIONS").unwrap_or("1".to_string()))
+                        // perf respects this environment variable for e.g., percents in
+                        // the output, but we want standard output on all systems.
+                        // See #753 for more details.
+                        .env("LC_NUMERIC", "C")
+                        .arg("-x;")
+                        .arg("-e")
+                        .arg("instructions:u,cycles:u,task-clock,cpu-clock,faults,context-switches")
+                        .arg("--log-fd")
+                        .arg("1")
+                        .arg("setarch")
+                        .arg(std::env::consts::ARCH)
+                        .arg("./x.py")
+                        .arg("test");
                     let output = command_output(&mut cmd)?;
                     let data = ProcessOutputData {
                         name: self.name.clone(),
